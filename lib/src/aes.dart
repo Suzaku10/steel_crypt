@@ -6,6 +6,7 @@
 
 part of 'steel_crypt_base.dart';
 
+
 ///Create symmetric encryption machine (Crypt).
 class AesCrypt {
   core.String _mode;
@@ -126,5 +127,44 @@ class AesCrypt {
       var inter = cipher.process(base64.decode(encrypted));
       return utf8.decode(inter);
     }
+  }
+
+  static String computeRijndaelEncrypt(String input,
+      [String iv = "", String key = ""]) {
+    var keys = utf8.encode(key);
+    var ivLocal = utf8.encode(iv);
+    var finalIV = crypt.md5.convert(ivLocal);
+    var finalKey = crypt.sha256.convert(keys);
+    CipherParameters params = PaddedBlockCipherParameters(
+        ParametersWithIV<KeyParameter>(
+            KeyParameter(Uint8List.fromList(finalKey.bytes)), Uint8List.fromList(finalIV.bytes)),
+        null);
+    PaddedBlockCipher cipher = PaddedBlockCipher(
+        "AES/" + 'cbc'.toUpperCase() + "/" + 'pkcs7'.toUpperCase());
+    cipher..init(true, params);
+    var inter = cipher.process(utf8.encode(input) as Uint8List);
+    return base64.encode(inter);
+  }
+
+  static String computeRijndaelDecrypt(String encrypted,
+      [String iv = "", String key = ""]) {
+    var keys = utf8.encode(key);
+    var ivLocal = utf8.encode(iv);
+    var finalIV = crypt.md5.convert(ivLocal);
+    var finalKeys = crypt.sha256.convert(keys);
+    CipherParameters params = PaddedBlockCipherParameters(
+        ParametersWithIV(KeyParameter(Uint8List.fromList(finalKeys.bytes)), Uint8List.fromList(finalIV.bytes)), null);
+    PaddedBlockCipher cipher = PaddedBlockCipher(
+        "AES/" + 'cbc'.toUpperCase() + "/" + 'pkcs7'.toUpperCase());
+    cipher..init(false, params);
+    var inter = cipher.process(base64.decode(encrypted));
+    return utf8.decode(inter);
+  }
+
+  static String computeSHA1(String input){
+    var a = ascii.encode(input);
+    var s = crypt.sha1.convert(a);
+
+    return s.toString();
   }
 }
