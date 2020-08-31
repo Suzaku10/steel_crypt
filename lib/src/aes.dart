@@ -133,11 +133,11 @@ class AesCrypt {
       [String iv = "", String key = ""]) {
     var keys = utf8.encode(key);
     var ivLocal = utf8.encode(iv);
-    var finalIV = crypt.md5.convert(ivLocal);
-    var finalKey = crypt.sha256.convert(keys);
+    var finalIV = MD5Digest().process(Uint8List.fromList(ivLocal));
+    var finalKey = SHA256Digest().process(Uint8List.fromList(keys));
     CipherParameters params = PaddedBlockCipherParameters(
         ParametersWithIV<KeyParameter>(
-            KeyParameter(Uint8List.fromList(finalKey.bytes)), Uint8List.fromList(finalIV.bytes)),
+            KeyParameter(Uint8List.fromList(finalKey)), Uint8List.fromList(finalIV)),
         null);
     PaddedBlockCipher cipher = PaddedBlockCipher(
         "AES/" + 'cbc'.toUpperCase() + "/" + 'pkcs7'.toUpperCase());
@@ -150,10 +150,10 @@ class AesCrypt {
       [String iv = "", String key = ""]) {
     var keys = utf8.encode(key);
     var ivLocal = utf8.encode(iv);
-    var finalIV = crypt.md5.convert(ivLocal);
-    var finalKeys = crypt.sha256.convert(keys);
+    var finalIV = MD5Digest().process(Uint8List.fromList(ivLocal));
+    var finalKeys = SHA256Digest().process(Uint8List.fromList(keys));
     CipherParameters params = PaddedBlockCipherParameters(
-        ParametersWithIV(KeyParameter(Uint8List.fromList(finalKeys.bytes)), Uint8List.fromList(finalIV.bytes)), null);
+        ParametersWithIV(KeyParameter(Uint8List.fromList(finalKeys)), Uint8List.fromList(finalIV)), null);
     PaddedBlockCipher cipher = PaddedBlockCipher(
         "AES/" + 'cbc'.toUpperCase() + "/" + 'pkcs7'.toUpperCase());
     cipher..init(false, params);
