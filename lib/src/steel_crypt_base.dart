@@ -11,7 +11,6 @@ import 'dart:core' as core;
 import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
-import 'package:crypto/crypto.dart' as crypt;
 
 import 'package:asn1lib/asn1lib.dart';
 

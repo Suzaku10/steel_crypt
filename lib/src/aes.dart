@@ -130,14 +130,10 @@ class AesCrypt {
   }
 
   static String computeRijndaelEncrypt(String input,
-      [String iv = "", String key = ""]) {
-    var keys = utf8.encode(key);
-    var ivLocal = utf8.encode(iv);
-    var finalIV = crypt.md5.convert(ivLocal);
-    var finalKey = crypt.sha256.convert(keys);
+      [Uint8List iv, Uint8List key]) {
     CipherParameters params = PaddedBlockCipherParameters(
         ParametersWithIV<KeyParameter>(
-            KeyParameter(Uint8List.fromList(finalKey.bytes)), Uint8List.fromList(finalIV.bytes)),
+            KeyParameter(key), iv),
         null);
     PaddedBlockCipher cipher = PaddedBlockCipher(
         "AES/" + 'cbc'.toUpperCase() + "/" + 'pkcs7'.toUpperCase());
@@ -147,13 +143,9 @@ class AesCrypt {
   }
 
   static String computeRijndaelDecrypt(String encrypted,
-      [String iv = "", String key = ""]) {
-    var keys = utf8.encode(key);
-    var ivLocal = utf8.encode(iv);
-    var finalIV = crypt.md5.convert(ivLocal);
-    var finalKeys = crypt.sha256.convert(keys);
+      [Uint8List iv, Uint8List key]) {
     CipherParameters params = PaddedBlockCipherParameters(
-        ParametersWithIV(KeyParameter(Uint8List.fromList(finalKeys.bytes)), Uint8List.fromList(finalIV.bytes)), null);
+        ParametersWithIV(KeyParameter(key), iv), null);
     PaddedBlockCipher cipher = PaddedBlockCipher(
         "AES/" + 'cbc'.toUpperCase() + "/" + 'pkcs7'.toUpperCase());
     cipher..init(false, params);
@@ -161,10 +153,4 @@ class AesCrypt {
     return utf8.decode(inter);
   }
 
-  static String computeSHA1(String input){
-    var a = ascii.encode(input);
-    var s = crypt.sha1.convert(a);
-
-    return s.toString();
-  }
 }
